@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Product {
+  id          String @id @default(uuid())
+  name        String
+  description String
+  price       Float
+  quantity    Int
+  purchases   ProductPurchase[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  deletedAt   DateTime?
+}
+
+model User {
+  id        String     @id @default(uuid())
+  name      String
+  email     String  @unique
+  password  String
+  addresses Address[]
+  phone     String?
+  purchases  Purchase[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+}
+
+model Address {
+  id           String      @id @default(uuid())
+  street       String
+  city         String
+  state        String
+  country      String
+  zipCode      String
+  streetNumber Int
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  deletedAt DateTime?
+}
+
+model Purchase {
+  id            String            @id @default(uuid())
+  userId        String
+  total         Float
+  purchase_date DateTime
+  user          User              @relation(fields: [userId], references: [id])
+  products      ProductPurchase[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  deletedAt    DateTime?
+}
+
+model ProductPurchase {
+  id          String   @id @default(uuid())
+  productId   String
+  purchaseId  String
+  quantity    Int
+  product     Product  @relation(fields: [productId], references: [id])
+  purchase    Purchase @relation(fields: [purchaseId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  deletedAt    DateTime?
+
+  @@unique([productId, purchaseId]) // Garantir que não haja duplicatas do mesmo produto na mesma compra
+}

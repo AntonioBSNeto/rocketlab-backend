@@ -17,6 +17,9 @@ $ pnpm install
 ## Executando o app
 
 ```bash
+# Executar as Migrações
+pnpm prisma migrate dev
+
 # development
 $ pnpm run start
 
